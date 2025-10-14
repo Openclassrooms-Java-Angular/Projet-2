@@ -1,18 +1,18 @@
-<div class="title">Medals per country</div>
+<div class="titleblock">
+  <div class="title">Medals per country</div>
+</div>
 
-<div>
-  <div class="stats">
-    <div>
-      <div>Number of JOs</div>
-      <div>{{ gamesCount }}</div>
-    </div>
-    <div>
-      <div>Number of countries</div>
-      <div>{{ countryCount }}</div>
-    </div>
+<div class="two-blocks">
+  <div class="block">
+    Number of JOs<br>
+    <strong>{{ gamesCount }}</strong>
   </div>
+  <div class="block">
+    Number of countries<br>
+    <strong>{{ countryCount }}</strong>
+  </div>
+</div>
 
-  <div class="chart-wrapper">
-    <canvas #medalsChart id="medalsChart" width="400" height="400"></canvas>
-  </div>
+<div class="chart-wrapper">
+  <canvas #medalsChart id="medalsChart"></canvas>
 </div>

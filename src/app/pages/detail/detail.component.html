@@ -1,10 +1,24 @@
-<div>{{ olympic?.country }}</div>
-<div>Number of entries: {{ entriesCount }}</div>
-<div>Total number of medals: {{ totalMedalsCount }}</div>
-<div>Total number of athletes: {{ totalAthletesCount }}</div>
-
-<div class="chart-wrapper">
-    <canvas #medalsChart id="medalsChart" width="400" height="400"></canvas>
+<div class="titleblock">
+  <div class="title">{{ olympic?.country }}</div>
 </div>
 
-<a href="/">Retour</a>
+<div class="two-blocks">
+  <div class="block">
+    Number of entries<br>
+    <strong>{{ entriesCount }}</strong>
+  </div>
+  <div class="block">
+    Total number of medals<br>
+    <strong>{{ totalMedalsCount }}</strong>
+  </div>
+  <div class="block">
+    Total number of athletes<br>
+    <strong>{{ totalAthletesCount }}</strong>
+  </div>
+</div>
+
+<div class="chart-wrapper">
+  <canvas #medalsChart id="medalsChart"></canvas>
+</div>
+
+<button (click)="goHome()">↩️ Retour</button>

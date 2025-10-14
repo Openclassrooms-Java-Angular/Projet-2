@@ -1,0 +1,54 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.titleblock {
+    display: flex;
+    flex-direction: row;
+}
+
+.title {
+    padding: 10px;
+    background-color: darkgreen;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 2em;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.two-blocks {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 50px;
+}
+
+.block {
+    padding: 15px 20px;
+    border: 2px solid darkgreen;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.chart-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    width: 100%;    /* occupe toute la largeur disponible */
+    max-width: 100vw;    /* ne dépasse jamais la largeur de l'écran */
+    height: 80vh;    /* hauteur dynamique = 80% de la hauteur visible */
+    max-height: 100vh;    /* ne dépasse pas l'écran */
+}
+
+@media (width <=300px) {
+    .two-blocks {
+        flex-direction: column;
+        align-items: center;
+    }
+}
