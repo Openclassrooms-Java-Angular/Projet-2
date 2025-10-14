@@ -1,6 +1,6 @@
-import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, switchMap, map } from 'rxjs';
 import { Olympic } from 'src/app/core/models/Olympic';
 import { OlympicService } from 'src/app/core/services/olympic.service';
@@ -12,9 +12,9 @@ Chart.register(...registerables);
   standalone: true,
   imports: [CommonModule],
   templateUrl: './detail.component.html',
-  styleUrl: './detail.component.scss'
+  styleUrls: ['../home/home.component.scss', './detail.component.scss']
 })
-export class DetailComponent implements AfterViewInit {
+export class DetailComponent implements AfterViewInit, OnDestroy {
   @ViewChild('medalsChart') private canvasRef?: ElementRef<HTMLCanvasElement>;
   private chart?: Chart;
   public olympic$: Observable<Olympic | undefined>;
@@ -25,7 +25,8 @@ export class DetailComponent implements AfterViewInit {
 
   constructor(
     private route: ActivatedRoute,
-    private olympicService: OlympicService
+    private olympicService: OlympicService,
+    private router: Router
   ) {
     this.olympic$ = this.route.paramMap.pipe(
       map(pm => Number(pm.get('id'))),
@@ -85,7 +86,7 @@ export class DetailComponent implements AfterViewInit {
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
+          maintainAspectRatio: true,
           plugins: {
             title: {
               display: true,
@@ -102,5 +103,13 @@ export class DetailComponent implements AfterViewInit {
         },
       });
     }
+  }
+
+  ngOnDestroy() {
+    this.chart?.destroy();
+  }
+
+  goHome(): void {
+    this.router.navigate(['/']); // ou '/home', '/olympics', etc.
   }
 }
