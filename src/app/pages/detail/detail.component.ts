@@ -48,7 +48,6 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
 
       console.log(olympic);
 
-      // Si le canvas est déjà prêt (par exemple après navigation)
       this.updateChart();
     });
   }
@@ -98,8 +97,13 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
                 style: 'normal'
               },
             },
-            legend: { display: false }
+            legend: { display: false },
           },
+          scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
         },
       });
     }

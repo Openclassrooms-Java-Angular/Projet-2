@@ -29,10 +29,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.olympics = olympics;
 
-      // Si le canvas est déjà prêt (par exemple après navigation)
-      if (this.canvasRef) {
-        this.updateChart();
-      }
+      this.updateChart();
     });
   }
 
@@ -95,7 +92,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           maintainAspectRatio: true,
           plugins: {
             legend: {
-              position: window.innerWidth < 300 ? 'bottom' : 'right', // position selon largeur
+              position: 'bottom',
+              labels: {
+                font: {
+                  size: 20,
+                },
+              },
             }
           },
           onClick: clickHandler

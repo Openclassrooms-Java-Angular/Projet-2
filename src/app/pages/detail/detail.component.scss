@@ -1,4 +1,19 @@
 .chart-wrapper {
-    height: 70vh;    /* hauteur dynamique = 70% de la hauteur visible */
-    max-height: 100vh;    /* ne dépasse pas l'écran */
+    height: 70vh;    /* hauteur dynamique : % de la hauteur visible */
+    max-height: 70vh;    /* ne dépasse pas l'écran */
+}
+
+.return {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+
+@media (width <=400px) {
+  .return {
+    position: relative;
+    left: unset;
+    top: unset;
+    margin-bottom: 10px;
+  }
 }
