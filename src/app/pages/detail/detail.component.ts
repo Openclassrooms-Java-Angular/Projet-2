@@ -49,8 +49,6 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
         this.totalAthletesCount += p.athleteCount;
       }
 
-      console.log(olympic);
-
       this.updateChart();
     });
   }
