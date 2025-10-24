@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 import { Olympic } from 'src/app/core/models/Olympic';
 import { OlympicService } from 'src/app/core/services/olympic.service';
 import { Chart, registerables } from 'chart.js';
@@ -22,13 +22,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private olympicService: OlympicService, private router: Router) { }
 
   ngOnInit(): void {
-    this.olympics$ = this.olympicService.getOlympics();
+    // lancer le chargement initial
+    this.olympics$ = this.olympicService.loadInitialData().pipe(
+      switchMap(() => this.olympicService.getOlympics())
+    );
 
+  // abonnement au flux des données
     this.olympics$.subscribe((olympics) => {
       if (!olympics) return;
-
       this.olympics = olympics;
-
       this.updateChart();
     });
   }

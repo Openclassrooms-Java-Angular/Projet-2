@@ -28,10 +28,13 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
     private olympicService: OlympicService,
     private router: Router
   ) {
+    // charger les données si pas encore chargées
+    this.olympicService.loadInitialData().subscribe();
+  
     this.olympic$ = this.route.paramMap.pipe(
       map(pm => Number(pm.get('id'))),
       switchMap(id => this.olympicService.getOlympics().pipe(
-        map(list => (list ?? []).find(o => o.id === id))
+        map((list: Olympic[] | null | undefined) => (list ?? []).find(o => o.id === id))
       ))
     );
 
