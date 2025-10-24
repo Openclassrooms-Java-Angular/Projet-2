@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, Subject, switchMap } from 'rxjs';
 import { Olympic } from 'src/app/core/models/Olympic';
 import { OlympicService } from 'src/app/core/services/olympic.service';
 import { Chart, registerables } from 'chart.js';
@@ -18,16 +18,19 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   public olympics: Olympic[] = [];
   public gamesCount = 0; // nombre d'années distinctes (tous pays confondus)
   public countryCount = 0; // nombre de pays participants
+  private destroy$!: Subject<boolean>;
 
   constructor(private olympicService: OlympicService, private router: Router) { }
 
   ngOnInit(): void {
+    this.destroy$ = new Subject<boolean>();
+
     // lancer le chargement initial
     this.olympics$ = this.olympicService.loadInitialData().pipe(
       switchMap(() => this.olympicService.getOlympics())
     );
 
-  // abonnement au flux des données
+    // abonnement au flux des données
     this.olympics$.subscribe((olympics) => {
       if (!olympics) return;
       this.olympics = olympics;
@@ -110,6 +113,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.chart?.destroy();
+    this.destroy$.next(true);
   }
 }
 

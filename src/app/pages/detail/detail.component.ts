@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, switchMap, map } from 'rxjs';
+import { Observable, switchMap, map, Subject } from 'rxjs';
 import { Olympic } from 'src/app/core/models/Olympic';
 import { OlympicService } from 'src/app/core/services/olympic.service';
 import { Chart, registerables } from 'chart.js';
@@ -22,12 +22,15 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
   public entriesCount: number = 0;
   public totalMedalsCount: number = 0;
   public totalAthletesCount: number = 0;
+  private destroy$!: Subject<boolean>;
 
   constructor(
     private route: ActivatedRoute,
     private olympicService: OlympicService,
     private router: Router
   ) {
+    this.destroy$ = new Subject<boolean>();
+
     // charger les données si pas encore chargées
     this.olympicService.loadInitialData().subscribe();
   
@@ -59,8 +62,6 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateChart(): void {
-    const totalMedalsCount: number[] = []; // total des médailles par pays
-
     if (!this.olympic || !this.canvasRef) return;
 
     const labels = this.olympic.participations.map(p => p.year);
@@ -112,6 +113,7 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.chart?.destroy();
+    this.destroy$.next(true);
   }
 
   goHome(): void {
