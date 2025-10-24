@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Observable, Subject, switchMap } from 'rxjs';
 import { Olympic } from 'src/app/core/models/Olympic';
 import { OlympicService } from 'src/app/core/services/olympic.service';
-import { Chart, registerables } from 'chart.js';
+import { ActiveElement, Chart, ChartEvent, registerables } from 'chart.js';
 Chart.register(...registerables);
 
 @Component({
@@ -67,9 +67,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.countryCount = this.olympics.length;
     this.gamesCount = years.size;
 
-    const clickHandler = (evt: any, elements: any[]) => {
+    const clickHandler = (evt: ChartEvent, elements: ActiveElement[]) => {
       if (!elements || !elements.length) return;
-      const idx = elements[0].index ?? elements[0].dataIndex;
+      const idx = elements[0].index ?? elements[0].datasetIndex;
       const item = this.olympics[idx];
       if (item?.id != null) {
         this.router.navigate(['/detail', item.id]);
