@@ -1,6 +1,6 @@
 <div class="titleblock">
 <button (click)="goHome()" class="return">↩️ Retour</button>
-  <div class="title">{{ olympic?.country }}</div>
+  <div class="title">{{ olympic?.country ?? 'Unknown country' }}</div>
 </div>
 
 <div class="two-blocks">

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, switchMap } from 'rxjs';
+import { Observable, Subject, switchMap, takeUntil } from 'rxjs';
 import { Olympic } from 'src/app/core/models/Olympic';
 import { OlympicService } from 'src/app/core/services/olympic.service';
 import { ActiveElement, Chart, ChartEvent, registerables } from 'chart.js';
@@ -9,7 +9,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('medalsChart') private canvasRef?: ElementRef<HTMLCanvasElement>;
@@ -31,7 +31,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     // abonnement au flux des données
-    this.olympics$.subscribe((olympics) => {
+    this.olympics$.pipe(takeUntil(this.destroy$)).subscribe(olympics => {
       if (!olympics) return;
       this.olympics = olympics;
       this.updateChart();
@@ -68,11 +68,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gamesCount = years.size;
 
     const clickHandler = (evt: ChartEvent, elements: ActiveElement[]) => {
-      if (!elements || !elements.length) return;
-      const idx = elements[0].index ?? elements[0].datasetIndex;
-      const item = this.olympics[idx];
-      if (item?.id != null) {
-        this.router.navigate(['/detail', item.id]);
+      const idx = elements[0]?.index;
+      if (idx != null) {
+        this.router.navigate(['/detail', this.olympics[idx].id]);
       }
     };
 
@@ -114,6 +112,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.chart?.destroy();
     this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }
 

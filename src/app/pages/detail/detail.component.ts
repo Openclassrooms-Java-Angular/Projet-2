@@ -1,7 +1,6 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, switchMap, map, Subject } from 'rxjs';
+import { Observable, switchMap, map, Subject, takeUntil } from 'rxjs';
 import { Olympic } from 'src/app/core/models/Olympic';
 import { OlympicService } from 'src/app/core/services/olympic.service';
 import { Chart, registerables } from 'chart.js';
@@ -9,15 +8,13 @@ Chart.register(...registerables);
 
 @Component({
   selector: 'app-detail',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './detail.component.html',
   styleUrls: ['../home/home.component.scss', './detail.component.scss']
 })
-export class DetailComponent implements AfterViewInit, OnDestroy {
+export class DetailComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('medalsChart') private canvasRef?: ElementRef<HTMLCanvasElement>;
   private chart?: Chart;
-  public olympic$: Observable<Olympic | undefined>;
+  public olympic$!: Observable<Olympic | undefined>;
   public olympic: Olympic | undefined;
   public entriesCount: number = 0;
   public totalMedalsCount: number = 0;
@@ -28,24 +25,31 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private olympicService: OlympicService,
     private router: Router
-  ) {
+  ) {}
+
+  ngOnInit(): void {
     this.destroy$ = new Subject<boolean>();
 
     // charger les données si pas encore chargées
-    this.olympicService.loadInitialData().subscribe();
-  
-    this.olympic$ = this.route.paramMap.pipe(
+    this.olympicService.loadInitialData().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe();
+
+    this.route.paramMap.pipe(
       map(pm => Number(pm.get('id'))),
       switchMap(id => this.olympicService.getOlympics().pipe(
         map((list: Olympic[] | null | undefined) => (list ?? []).find(o => o.id === id))
-      ))
-    );
-
-    this.olympic$.subscribe(olympic => {
+      )),
+      takeUntil(this.destroy$)
+    ).subscribe(olympic => {
       if (!olympic) return;
 
       this.olympic = olympic;
       this.entriesCount = olympic.participations.length;
+
+      // réinitialiser les totaux avant le calcul
+      this.totalMedalsCount = 0;
+      this.totalAthletesCount = 0;
 
       for (const p of olympic.participations) {
         this.totalMedalsCount += p.medalsCount;
@@ -58,7 +62,9 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     // Une fois la vue rendue, on peut créer le graphique
-    this.updateChart();
+    if (this.olympic) {
+      this.updateChart();
+    }
   }
 
   private updateChart(): void {
@@ -102,10 +108,10 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
             legend: { display: false },
           },
           scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
+            y: {
+              beginAtZero: true
+            }
+          }
         },
       });
     }
@@ -114,6 +120,7 @@ export class DetailComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.chart?.destroy();
     this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   goHome(): void {
